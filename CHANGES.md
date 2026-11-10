@@ -1,4 +1,5 @@
 # Future
+- NETWORK: Conditions compare how far apart two addresses are (485 - 47e <= 32), STEPS takes stop becomes for a stop that fires only once it starts to hold, READ_CORE_MEMORY reads several ranges in one request, and WATCH counts its limit after the offs in a request
 - D3D11: Software-rendering cores draw straight into lent staging textures, copied to the frame texture on the GPU instead of by the CPU
 - VULKAN: Keep the pipeline cache on disk between runs, one file per GPU, so stock and slang shader pipelines are not recompiled by the driver on every launch, preset load or driver reinit
 - LINUX: Game Mode implemented natively (I/O priority plus a power-profiles-daemon performance hold); Feral libgamemode is no longer loaded and deps/feralgamemode is removed
