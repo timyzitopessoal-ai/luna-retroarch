@@ -2728,6 +2728,10 @@ static void frontend_unix_sighandler(int sig)
 static void frontend_unix_install_signal_handlers(void)
 {
    struct sigaction sa;
+#ifdef HAVE_LUNA
+   /* dentro do LunaGames os sinais são do app */
+   return;
+#endif
 
    sa.sa_sigaction = NULL;
    sa.sa_handler   = frontend_unix_sighandler;

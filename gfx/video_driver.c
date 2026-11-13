@@ -98,6 +98,9 @@ static const video_display_server_t dispserv_null = {
 };
 
 static const gfx_ctx_driver_t *gfx_ctx_gl_drivers[] = {
+#if defined(HAVE_LUNA)
+   &gfx_ctx_luna,
+#endif
 #if defined(ORBIS)
    &orbis_ctx,
 #endif

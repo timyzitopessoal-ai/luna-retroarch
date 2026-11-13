@@ -13,6 +13,7 @@
  *  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "../../luna/luna_host.h"
 #include <retro_common_api.h>
 
 #include "shader_gl3.h"
@@ -584,7 +585,7 @@ Framebuffer::Framebuffer(GLenum format_, unsigned max_levels_)
 
    /* Need to bind to create */
    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 
    if (format == 0)
       format = GL_RGBA8;
@@ -673,7 +674,7 @@ void Framebuffer::init()
       }
    }
 
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -1791,12 +1792,12 @@ void Pass::build_commands(
    glDisable(GL_FRAMEBUFFER_SRGB);
 #endif
 
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 
    if (!final_pass)
       if (framebuffer->get_levels() > 1)
       {
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
          glBindTexture(GL_TEXTURE_2D, framebuffer->get_image());
          glGenerateMipmap(GL_TEXTURE_2D);
          glBindTexture(GL_TEXTURE_2D, 0);
@@ -2252,7 +2253,7 @@ void gl3_filter_chain::clear_history_and_feedback()
          glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
          glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
          glClear(GL_COLOR_BUFFER_BIT);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
       }
    }
    for (i = 0; i < passes.size(); i++)
@@ -2265,7 +2266,7 @@ void gl3_filter_chain::clear_history_and_feedback()
          glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
          glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
          glClear(GL_COLOR_BUFFER_BIT);
-         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+         glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
       }
    }
 }

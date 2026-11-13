@@ -33,6 +33,16 @@ DEFINES += -DCORE_INFO_DIR='"$(DESTDIR)$(CORE_INFO_DIR)"'
 
 OBJDIR_BASE := obj-unix
 
+# LunaGames: `make LUNA_LIB=1` gera libluna_retroarch.so, o RetroArch como
+# biblioteca que o LunaGames carrega (janela, OpenGL e controle vêm do app).
+ifeq ($(LUNA_LIB), 1)
+   TARGET      := libluna_retroarch.so
+   OBJDIR_BASE := obj-luna
+   DEFINES     += -DHAVE_MAIN -DHAVE_LUNA
+   DEF_FLAGS   += -fPIC -fvisibility=hidden
+   LDFLAGS     += -shared -Wl,-Bsymbolic -Wl,-soname,libluna_retroarch.so -Wl,-z,defs
+endif
+
 ifeq ($(NEED_GOLD_LINKER), 1)
    LDFLAGS += -fuse-ld=gold
 endif

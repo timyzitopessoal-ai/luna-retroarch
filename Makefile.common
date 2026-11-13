@@ -2806,3 +2806,10 @@ endif
 endif
 
 ##################################
+
+# LunaGames (ver Makefile, LUNA_LIB)
+ifeq ($(LUNA_LIB), 1)
+   OBJ += luna/luna_api.o \
+          gfx/drivers_context/luna_ctx.o \
+          input/drivers_joypad/luna_joypad.o
+endif

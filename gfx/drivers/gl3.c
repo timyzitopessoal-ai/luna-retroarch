@@ -22,6 +22,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
+#include "../../luna/luna_host.h"
 #include "../../config.h"
 #endif
 
@@ -280,7 +281,7 @@ void gl3_framebuffer_copy(
 
    glUseProgram(0);
    glBindTexture(GL_TEXTURE_2D, 0);
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 }
 
 void gl3_framebuffer_copy_partial(
@@ -342,7 +343,7 @@ void gl3_framebuffer_copy_partial(
    glDisableVertexAttribArray(1);
    glUseProgram(0);
    glBindTexture(GL_TEXTURE_2D, 0);
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 }
 
 GLuint gl3_compile_shader(GLenum stage, const char *source)
@@ -1776,7 +1777,7 @@ static bool gl3_init_hw_render(gl3_t *gl, unsigned width, unsigned height)
    gl->hw_render_max_width  = width;
    gl->hw_render_max_height = height;
    glBindTexture(GL_TEXTURE_2D, 0);
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 
    if (gl->flags & GL3_FLAG_USE_SHARED_CONTEXT)
       gl->ctx_driver->bind_hw_render(gl->ctx_data, false);
@@ -3694,7 +3695,7 @@ static void gl3_renderchain_render(
    fbo_tex_info_cnt++;
 
    /* Render our FBO texture to back buffer. */
-   glBindFramebuffer(GL_FRAMEBUFFER, 0);
+   glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
 
    gl->chain.shader->use(gl, gl->chain.shader_data,
          gl->chain.num_fbo_passes + 1, true);
@@ -3933,7 +3934,7 @@ static bool gl3_frame(void *data, const void *frame,
       {
          if (gl->chain.num_fbo_passes == 0)
          {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
             gl3_set_viewport(gl, width, height, false, true);
          }
 
@@ -4097,7 +4098,7 @@ static bool gl3_frame(void *data, const void *frame,
       gl3_filter_chain_build_offscreen_passes(filter_chain,
             &gl->filter_chain_vp);
 
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      glBindFramebuffer(GL_FRAMEBUFFER, LUNA_DEFAULT_FBO);
       glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
       glClear(GL_COLOR_BUFFER_BIT);
       gl3_filter_chain_build_viewport_pass(filter_chain,
