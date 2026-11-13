@@ -13,7 +13,7 @@ O script roda `./configure --disable-qt --disable-ffmpeg` e `make LUNA_LIB=1`. S
 
 O que o fork muda (tudo atrás de `HAVE_LUNA`):
 
-- `luna/luna_api.c`: a API (`luna_ra_init`, `luna_ra_iterate`, `luna_ra_deinit`, `luna_ra_request_quit`, `luna_ra_set_pad`, `luna_ra_set_axis`, `luna_ra_set_focus`, `luna_ra_set_refresh`). Tudo na mesma thread, com o contexto OpenGL do app ativo. Para outra partida, o app descarrega e carrega a biblioteca de novo (o RetroArch guarda muito estado global).
+- `luna/luna_api.c`: a API (`luna_ra_init`, `luna_ra_iterate`, `luna_ra_deinit`, `luna_ra_request_quit`, `luna_ra_set_pad`, `luna_ra_set_axis`, `luna_ra_set_focus`, `luna_ra_set_refresh`, `luna_ra_get_fps`). Tudo na mesma thread, com o contexto OpenGL do app ativo. Para outra partida, o app descarrega e carrega a biblioteca de novo (o RetroArch guarda muito estado global).
 - `gfx/drivers_context/luna_ctx.c`: contexto `luna` para o driver `glcore`. Não cria janela nem troca buffers; tamanho, foco e funções do OpenGL vêm do app.
 - `gl3.c` e `shader_gl3.cpp`: a imagem final sai no framebuffer do app (`LUNA_DEFAULT_FBO`), e não no 0. No GtkGLArea o framebuffer é outro.
 - `input/drivers_joypad/luna_joypad.c`: controle `luna`. O app entrega cada jogador já no desenho do RetroPad (bit n = `RETRO_DEVICE_ID_JOYPAD` n), com os botões trocados aplicados.
@@ -31,3 +31,9 @@ Configuração mínima do `retroarch.cfg` para esse modo:
 ## Atualizar a partir do RetroArch original
 
     git fetch upstream --tags
+
+## Como o LunaGames usa
+
+O lado do app está em `crates/luna-app/src/embed.rs` do LunaGames: a janela do jogo tem um `GtkGLArea` (onde a biblioteca desenha) com a página do menu Home por cima. O app chama `luna_ra_iterate` no ritmo do núcleo (`luna_ra_get_fps`), qualquer que seja a frequência do monitor, e descarrega a biblioteca no fim de cada partida.
+
+Instalar para o LunaGames achar: copiar `libluna_retroarch.so` para `~/.local/share/lunagames/emuladores/retroarch/` (ou apontar `LUNA_RETROARCH_LIB` para ela).

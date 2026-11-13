@@ -11,6 +11,7 @@
 #include "../frontend/frontend.h"
 #include "../runloop.h"
 #include "../command.h"
+#include "../gfx/video_driver.h"
 #include "luna_host.h"
 
 #define LUNA_EXPORT __attribute__((visibility("default")))
@@ -82,4 +83,14 @@ LUNA_EXPORT void luna_ra_set_axis(unsigned port, unsigned axis, int16_t value)
 {
    if (port < LUNA_MAX_PADS && axis < 4)
       luna_host.axis[port][axis] = value;
+}
+
+/* Quadros por segundo do núcleo (60,09 no SNES). O app chama luna_ra_iterate
+ * nesse ritmo, seja qual for a frequência do monitor. */
+LUNA_EXPORT double luna_ra_get_fps(void)
+{
+   video_driver_state_t *video_st = video_state_get_ptr();
+   if (!luna_running || video_st->av_info.timing.fps <= 0.0)
+      return 60.0;
+   return video_st->av_info.timing.fps;
 }
