@@ -862,6 +862,30 @@ static bool try_xdelta_patch(bool allow_xdelta,
     return false;
 }
 
+/* LunaGames: aplica "nome" e depois "nome1" a "nome9", enquanto existirem. */
+static bool luna_patch_chain(
+      bool (*try_patch)(bool, const char *, uint8_t **, ssize_t *),
+      const char *name, uint8_t **buf, void *data)
+{
+   ssize_t *size = (ssize_t*)data;
+   char indexed[PATH_MAX_LENGTH];
+   size_t len;
+   unsigned i;
+   if (string_is_empty(name) || !try_patch(true, name, buf, size))
+      return false;
+   len = strlcpy(indexed, name, sizeof(indexed));
+   if (len + 2 > sizeof(indexed))
+      return true;
+   for (i = 1; i < 10; i++)
+   {
+      indexed[len]     = (char)('0' + i);
+      indexed[len + 1] = '\0';
+      if (!try_patch(true, indexed, buf, size))
+         break;
+   }
+   return true;
+}
+
 /**
  * patch_content:
  * @buf          : buffer of the content file.
@@ -888,14 +912,24 @@ bool patch_content(
    bool allow_bps    = !is_ups_pref && !is_ips_pref && !is_xdelta_pref;
    bool allow_xdelta = !is_bps_pref && !is_ups_pref && !is_ips_pref;
 
+   /* LunaGames: vários tipos de patch de uma vez (um mod .bps e outro .ips, por
+    * exemplo). Primeiro os que conferem o jogo original (.bps, .ups, .xdelta),
+    * depois os .ips; cada tipo com a sua lista (nome, nome1, nome2...). */
    if (    (unsigned)is_ips_pref
          + (unsigned)is_bps_pref
          + (unsigned)is_ups_pref
          + (unsigned)is_xdelta_pref > 1)
    {
-      RARCH_WARN("[Patch] %s\n",
-            msg_hash_to_str(MSG_SEVERAL_PATCHES_ARE_EXPLICITLY_DEFINED));
-      return false;
+      bool any = false;
+      if (is_bps_pref)
+         any |= luna_patch_chain(try_bps_patch, name_bps, buf, size);
+      if (is_ups_pref)
+         any |= luna_patch_chain(try_ups_patch, name_ups, buf, size);
+      if (is_xdelta_pref)
+         any |= luna_patch_chain(try_xdelta_patch, name_xdelta, buf, size);
+      if (is_ips_pref)
+         any |= luna_patch_chain(try_ips_patch, name_ips, buf, size);
+      return any;
    }
 
    /* Attempt to apply first (non-indexed) patch */

@@ -13,7 +13,8 @@ O script roda `./configure --disable-qt --disable-ffmpeg` e `make LUNA_LIB=1`. S
 
 O que o fork muda (tudo atrás de `HAVE_LUNA`):
 
-- `luna/luna_api.c`: a API (`luna_ra_init`, `luna_ra_iterate`, `luna_ra_deinit`, `luna_ra_request_quit`, `luna_ra_set_pad`, `luna_ra_set_axis`, `luna_ra_set_focus`, `luna_ra_set_refresh`, `luna_ra_get_fps`). Tudo na mesma thread, com o contexto OpenGL do app ativo. Para outra partida, o app descarrega e carrega a biblioteca de novo (o RetroArch guarda muito estado global).
+- `luna/luna_api.c`: a API (`luna_ra_init`, `luna_ra_iterate`, `luna_ra_deinit`, `luna_ra_request_quit`, `luna_ra_set_pad`, `luna_ra_set_axis`, `luna_ra_set_focus`, `luna_ra_set_refresh`, `luna_ra_get_fps`; na API 2, `luna_ra_set` (escala inteira, formato, volume e acelerar com o jogo aberto) e `luna_ra_cheats` (troca as trapaças pelas de um .cht)). Tudo na mesma thread, com o contexto OpenGL do app ativo. Para outra partida, o app descarrega e carrega a biblioteca de novo (o RetroArch guarda muito estado global).
+- `tasks/task_patch.c` (`luna_patch_chain`, vale também fora do `HAVE_LUNA`): com mais de um tipo de patch na linha de comando (`--bps` e `--ips` juntos, por exemplo), aplica todos em vez de recusar. Ordem: `.bps`, `.ups`, `.xdelta` (conferem o jogo original) e depois `.ips`; cada tipo com os numerados (`nome1` a `nome9`), como o RetroArch já fazia para um tipo só.
 - `gfx/drivers_context/luna_ctx.c`: contexto `luna` para o driver `glcore`. Não cria janela nem troca buffers; tamanho, foco e funções do OpenGL vêm do app.
 - `gl3.c` e `shader_gl3.cpp`: a imagem final sai no framebuffer do app (`LUNA_DEFAULT_FBO`), e não no 0. No GtkGLArea o framebuffer é outro.
 - `input/drivers_joypad/luna_joypad.c`: controle `luna`. O app entrega cada jogador já no desenho do RetroPad (bit n = `RETRO_DEVICE_ID_JOYPAD` n), com os botões trocados aplicados.
